@@ -2,6 +2,11 @@ import { Image } from "./Image";
 import { getImageName, prepareLevelDirectory } from "./utilities";
 import { join } from "path";
 
+export const getNumberOfLevelsForImage = (width: number, height: number) => {
+  const maxDimension = Math.max(width, height);
+  return Math.ceil(1 + Math.log10(maxDimension));
+};
+
 const produceTiles = async (
   image: Image,
   outputPath: string,
@@ -10,7 +15,7 @@ const produceTiles = async (
 ) => {
   const { width, height } = image.properties;
   const maxDimension = Math.max(width, height);
-  const numberOfLevels = Math.ceil(1 + Math.log10(maxDimension));
+  const numberOfLevels = getNumberOfLevelsForImage(width, height);
 
   console.log(`Number of levels expected: ${numberOfLevels}`);
 
