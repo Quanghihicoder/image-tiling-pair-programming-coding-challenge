@@ -24,9 +24,9 @@ Make sure you have a read of the background information below as well and come r
 
 ### A bit more background
 
-Our visualiser has a feature that allows customers to view the source photos that they uploaded as part of a survey. One survey may consist of several thousand large (30+ MB) photos. To make viewing snappy, we cut each photo up into tiles. Tiles are then generated for the photo at full resolution, at 1⁄2 resolution, at 1⁄4 resolution, at 1⁄8 resolution, and so on, until the photo cannot be shrunk further (i.e. its resolution is 1 × 1).
+Our visualiser has a feature that allows customers to view the source photos that they uploaded as part of a survey. One survey may consist of several thousand large (30+ MB) photos. To make viewing snappy, we cut each photo up into tiles. Tiles are then generated for the photo at full resolution, at 1⁄2 resolution, at 1⁄4 resolution, at 1⁄8 resolution, and so on, until the photo cannot be shrunk further (i.e. its size is 1 × 1).
 
-By convention, we call the lowest resolution "level 0", so that at level 0, there is only a single tile of size 1 × 1. At level 1, there is a single tile of size 2 × 2; at level 2, a single tile of size 4 × 4. This continues until the result would exceed the size of a single tile, at which point the level should contain as many tiles as required to cover the whole photo at that level's resolution. At the final level, there is no loss of resolution from the original photo.
+By convention, we call the lowest resolution "level 0", so that at level 0, there is only a single tile of size 1 × 1. At level 1, there is a single tile of size at most 2 × 2; at level 2, a single tile of at most size 4 × 4. This continues until the result would exceed the size of a single tile, at which point the level should contain as many tiles as required to cover the whole photo at that level's resolution. At the final level, there is no loss of resolution from the original photo.
 
 For a photo with resolution n × m, there will be `1 + ⌈log2 max(n, m)⌉` levels of tiles.
 
