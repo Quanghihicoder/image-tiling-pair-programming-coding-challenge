@@ -26,18 +26,18 @@ Make sure you have a read of the background information below as well and come r
 
 Our visualiser has a feature that allows customers to view the source photos that they uploaded as part of a survey. One survey may consist of several thousand large (30+ MB) photos. To make viewing snappy, we cut each photo up into tiles. Tiles are then generated for the photo at full resolution, at 1⁄2 resolution, at 1⁄4 resolution, at 1⁄8 resolution, and so on, until the photo cannot be shrunk further (i.e. its resolution is 1 × 1).
 
-For a photo with the resolution n × m, there will be `L = 1 + ⌈log2 max(n, m)⌉` levels of tiles; each level will cover the whole photo, but on the highest (lowest-numbered) level, the original image will be shrunk down to 1 × 1 pixels. By convention the levels start at 0 and go "down" to level L − 1, which has the most number of tiles that together have as many pixels as the original photo.
+By convention, we call the lowest resolution "level 0", so that at level 0, there is only a single tile of size 1 × 1. At level 1, there is a single tile of size 2 × 2; at level 2, a single tile of size 4 × 4. This continues until the result would exceed the size of a single tile, at which point the level should contain as many tiles as required to cover the whole photo at that level's resolution. At the final level, there is no loss of resolution from the original photo.
 
-As we don't want photos to get too large let's limit our tiles to a maximum of 256 × 256 pixels. Any level that is greater than this will then need to be split into tiles of 256 × 256.
+For a photo with resolution n × m, there will be `1 + ⌈log2 max(n, m)⌉` levels of tiles.
 
-How do all these little tiles help? Well, say that the photo is something like 7000 × 5000 pixels and we are viewing it in a viewport that is 1000 × 800 (0.8 megapixels). The browser can then choose to load the 4 × 3 tiles from level 10, totalling 0.8 megapixels, instead of the full photo at 35 megapixels. It also means that when zooming into different parts of the image, we only have to load higher-resolution imagery for that part, and not for any other.
+How does tiling help? Well, say that the photo is 7000 × 5000 pixels and we are viewing it in a viewport that is 1000 × 800 (0.8 megapixels). The highest-numbered level of this photo is 13, and it contains 28 tiles across and 20 tiles down. But the browser can choose to load the tiles from level 10, where there are only 4 tiles across and 3 down, for a total of 0.8 megapixels, instead of the full photo at 35 megapixels. It also means that when zooming into different parts of the image, we only have to load higher-resolution imagery for that part.
 
 Our job is to tile the photos. Some considerations:
 
-- You may use an image library for your chosen language for image manipulation, but the level/tiling logic should be your own
-- Tiles are a maximum of 256 × 256: if the photo is 1025 × 766, you'll end up with one-pixel slices to the right and you'll be a couple of pixels short at the bottom. That is fine.
+- You may use an image library for your chosen language for image manipulation, but the level/tiling logic should be your own.
+- For this challenge we will use a maximum tile size of 256 × 256: eg. if the photo is 1025 × 766, you'll end up with one-pixel slices to the right and you'll be a couple of pixels short at the bottom. That is fine.
 - Your utility takes one argument, the source file, and it writes a "pyramid" of tiles to an appropriately named directory in the same directory as the source file. Name your files "L/x_y.jpg" where
-  - L is the tile level (start at 0 for the most zoomed-out level),
+  - L is the tile level,
   - x is the tile's x coordinate and
   - y is the tile's y coordinate. Coordinates start at 0,0 in the top-left corner.
 - To make your setup repeatable, your code should be packaged with any dependencies in a [Docker](https://www.docker.com/) container using a Dockerfile.
@@ -48,10 +48,12 @@ Run locally using nodejs:
 
 `yarn install`
 
-`yarn start /local/path/to/image/to/tile`
+`yarn start sample_0.png`
 
 Run using Docker:
 
 `./build.sh`
 
-`./run.sh /local/path/to/image/to/tile`
+`./run.sh sample_0.png`
+
+This will output to the directory `tiled-image`, clearing any old tiles first.
