@@ -44,7 +44,7 @@ Our job is to tile the photos. Some considerations:
 
 ### How to run locally
 
-Run locally using nodejs:
+Run locally using nodejs (Version 20.3.0 or newer):
 
 `yarn install`
 
@@ -52,6 +52,6 @@ Run locally using nodejs:
 
 Run using Docker:
 
-`./build.sh`
-
-`./run.sh /local/path/to/image/to/tile`
+1. Ensure docker is running on your machine
+2. `./build.sh`
+3. `./run.sh /local/path/to/image/to/tile`
