@@ -1,24 +1,27 @@
-import produceTiles from "../produceTiles";
 import { Image } from "../Image";
+import produceTiles from "../produceTiles";
 
-const mockResize = jest.fn();
 const mockSave = jest.fn();
-const mockExtract = jest.fn();
 
 const createImageMock = (
   properties: { width: number; height: number },
-  mocks = { mockResize, mockSave, mockExtract }
+  mocks = { mockSave }
 ): Image => {
   return {
-    resize: mocks.mockResize.mockImplementation(
-      (width: number, height: number) =>
+    resize: jest
+      .fn()
+      .mockImplementation((width: number, height: number) =>
         createImageMock({ width, height }, mocks)
-    ),
+      ),
     save: mocks.mockSave,
-    extract: mocks.mockExtract.mockImplementation(
-      (left: number, top: number, width: number, height: number) =>
-        createImageMock({ width, height }, mocks)
-    ),
+    extract: jest
+      .fn()
+      .mockImplementation(
+        (left: number, top: number, width: number, height: number) =>
+          left + width > properties.width || top + height > properties.height
+            ? Promise.reject("Invalid extract")
+            : createImageMock({ width, height }, mocks)
+      ),
     properties,
   };
 };
@@ -26,8 +29,6 @@ const createImageMock = (
 describe("produceTiles", () => {
   beforeEach(() => {
     mockSave.mockClear();
-    mockResize.mockClear();
-    mockExtract.mockClear();
   });
 
   it("should produce the correct tiles if the image is square and its size is equal to the maxTileDimension", async () => {
